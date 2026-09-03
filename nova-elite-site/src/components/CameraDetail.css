@@ -1,0 +1,240 @@
+/* ============================================
+   NOVA Elite — Camera Detail Visual
+   ============================================ */
+
+.camera-detail {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-module-large {
+  position: relative;
+  width: 60%;
+  aspect-ratio: 52 / 96;
+  border-radius: 20px;
+  background: linear-gradient(
+    160deg,
+    #9E9D99 0%,
+    #8E8D8A 25%,
+    #7E7D7A 50%,
+    #8E8D8A 75%,
+    #9E9D99 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 4px 24px rgba(0, 0, 0, 0.6),
+    0 8px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 12px 0;
+}
+
+/* Brushed titanium grain */
+.camera-module-large::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+.cam-lens {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cam-lens-1 { width: 28px; height: 28px; }
+.cam-lens-2 { width: 38px; height: 38px; }
+.cam-lens-3 { width: 32px; height: 32px; }
+
+.cam-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #5a5a5a 0%,
+    #1a1a1a 50%,
+    #0a0a0a 100%
+  );
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.05),
+    0 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+.cam-glass {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #1a2530 0%,
+    #0a1520 40%,
+    #050a10 80%,
+    #020408 100%
+  );
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 2px rgba(50, 150, 220, 0.1);
+}
+
+/* AR coating reflection — green/magenta shift */
+.cam-coating {
+  position: absolute;
+  width: 50%;
+  height: 40%;
+  top: 15%;
+  left: 18%;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(100, 200, 255, 0.25) 0%,
+    rgba(80, 180, 200, 0.1) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.cam-lidar {
+  position: absolute;
+  top: 14px;
+  right: -28px;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: #0a0a0a;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.8);
+}
+
+.cam-flash {
+  position: absolute;
+  top: 20px;
+  right: -36px;
+  width: 8px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #f8f0e0 0%, #e8e0c8 100%);
+  box-shadow:
+    0 0 8px rgba(248, 240, 224, 0.8),
+    0 0 16px rgba(248, 240, 224, 0.3);
+}
+
+/* Measurement grid lines */
+.camera-grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.grid-line {
+  position: absolute;
+  background: rgba(142, 141, 138, 0.08);
+}
+
+.grid-line:nth-child(1) {
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+}
+
+.grid-line:nth-child(2) {
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  top: 100%;
+}
+
+.grid-line:nth-child(3) {
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 1px;
+}
+
+.grid-line:nth-child(4) {
+  right: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 1px;
+}
+
+/* Callout labels */
+.camera-callouts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.callout {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: callout-fade 1s var(--ease-out-expo) forwards;
+  opacity: 0;
+}
+
+.callout-1 { animation-delay: 0.4s; }
+.callout-2 { animation-delay: 0.6s; }
+.callout-3 { animation-delay: 0.8s; }
+
+@keyframes callout-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.callout-label {
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: var(--color-titanium);
+  text-transform: uppercase;
+}
+
+.callout-value {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--color-precision-white-40);
+}
+
+.callout-1 {
+  top: 12%;
+  right: -20%;
+  text-align: left;
+}
+
+.callout-2 {
+  bottom: 35%;
+  right: -20%;
+  text-align: left;
+}
+
+.callout-3 {
+  bottom: 10%;
+  right: -20%;
+  text-align: left;
+}

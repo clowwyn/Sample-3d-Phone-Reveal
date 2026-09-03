@@ -1,0 +1,64 @@
+:root {
+  /* Color System - NOVA Elite Brand */
+  --color-void: #0A0A0A;
+  --color-void-soft: #111111;
+  --color-void-surface: #1a1a1a;
+  --color-titanium: #8E8D8A;
+  --color-titanium-light: #A8A8A8;
+  --color-titanium-dark: #6E6E6A;
+  --color-obsidian: #0D0D0D;
+  --color-precision-white: #F8F8F8;
+  --color-precision-white-80: rgba(248, 248, 248, 0.8);
+  --color-precision-white-60: rgba(248, 248, 248, 0.6);
+  --color-precision-white-40: rgba(248, 248, 248, 0.4);
+  --color-lunar-silver: #C0C0C0;
+  --color-haze: rgba(255, 255, 255, 0.03);
+
+  /* Typography */
+  --font-display: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
+  --font-body: 'Inter', 'SF Pro Text', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+
+  /* Type Scale */
+  --text-display-xl: clamp(4rem, 12vw, 10rem);
+  --text-display-lg: clamp(2.5rem, 6vw, 5rem);
+  --text-display-md: clamp(1.5rem, 3vw, 2.5rem);
+  --text-body-lg: clamp(1rem, 1.5vw, 1.25rem);
+  --text-body: 1rem;
+  --text-caption: 0.75rem;
+  --text-label: 0.625rem;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.15em;
+  --tracking-widest: 0.3em;
+
+  /* Spacing */
+  --space-unit: 8px;
+  --space-xs: calc(var(--space-unit) * 1);
+  --space-sm: calc(var(--space-unit) * 2);
+  --space-md: calc(var(--space-unit) * 3);
+  --space-lg: calc(var(--space-unit) * 5);
+  --space-xl: calc(var(--space-unit) * 8);
+  --space-2xl: calc(var(--space-unit) * 13);
+  --space-3xl: calc(var(--space-unit) * 21);
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 800ms;
+  --duration-slower: 1200ms;
+  --duration-reveal: 2000ms;
+
+  /* Layout */
+  --max-width: 1400px;
+  --nav-height: 72px;
+  --aspect-phone: 165.1 / 77.6;
+  --aspect-display: 19.5 / 9;
+}

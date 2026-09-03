@@ -1,0 +1,593 @@
+/* ============================================
+   NOVA Elite — 2.5D CSS Phone Viewer
+   ============================================ */
+
+.phone-viewer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.phone-stage {
+  position: relative;
+  width: 280px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Phone body container */
+.phone-body {
+  position: relative;
+  width: 220px;
+  height: 480px;
+  transform-style: preserve-3d;
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+
+/* Shared face styles */
+.phone-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 36px;
+  overflow: hidden;
+}
+
+/* ============================================
+   BACK FACE — Midnight Obsidian Glass
+   ============================================ */
+.phone-face-back {
+  background: linear-gradient(
+    145deg,
+    #141414 0%,
+    #0D0D0D 30%,
+    #0A0A0A 60%,
+    #080808 100%
+  );
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.04),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(142, 141, 138, 0.15);
+}
+
+.phone-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+/* ============================================
+   CAMERA MODULE — Applied Titanium
+   ============================================ */
+.camera-module {
+  position: absolute;
+  top: 24px;
+  left: 17px;
+  width: 68px;
+  height: 96px;
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    #9E9D99 0%,
+    #8E8D8A 40%,
+    #7E7D7A 70%,
+    #6E6D6A 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 6px 0;
+}
+
+/* Vertical brushed titanium grain on module */
+.camera-module::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+.camera-lens {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-lens-1 { width: 18px; height: 18px; }
+.camera-lens-2 { width: 24px; height: 24px; }
+.camera-lens-3 { width: 20px; height: 20px; }
+
+.lens-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #4a4a4a 0%,
+    #1a1a1a 50%,
+    #0a0a0a 100%
+  );
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.8),
+    0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.lens-glass {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #1a2a3a 0%,
+    #0a1520 40%,
+    #050a10 80%
+  );
+  box-shadow:
+    inset 0 1px 2px rgba(100, 200, 255, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Sapphire AR coating reflection */
+.lens-glass::after {
+  content: '';
+  position: absolute;
+  width: 40%;
+  height: 30%;
+  top: 15%;
+  left: 20%;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(100, 200, 255, 0.2) 0%,
+    rgba(50, 150, 200, 0.05) 60%,
+    transparent 100%
+  );
+}
+
+.lidar-window {
+  position: absolute;
+  top: 8px;
+  right: -32px;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #0a0a0a;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.8);
+}
+
+.flash-unit {
+  position: absolute;
+  top: 14px;
+  right: -24px;
+  width: 6px;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #f8f0e0 0%, #e8e0c8 100%);
+  box-shadow:
+    0 0 4px rgba(248, 240, 224, 0.6),
+    0 0 8px rgba(248, 240, 224, 0.2);
+}
+
+/* ============================================
+   LOGO — Centered Negative Etch
+   ============================================ */
+.phone-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    #3a3a3a 0%,
+    #1a1a1a 40%,
+    #0a0a0a 100%
+  );
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(142, 141, 138, 0.1);
+}
+
+.phone-wordmark {
+  position: absolute;
+  bottom: 28px;
+  left: 17px;
+  font-family: var(--font-display);
+  font-size: 5px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: rgba(248, 248, 248, 0.5);
+  text-transform: uppercase;
+}
+
+/* ============================================
+   FRONT FACE — Display
+   ============================================ */
+.phone-face-front {
+  transform: rotateY(180deg);
+  background: #050505;
+}
+
+.phone-frame-front {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.phone-display {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 34px;
+  overflow: hidden;
+  background: #050505;
+}
+
+.display-content {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    #0a1520 0%,
+    #050a10 30%,
+    #020508 60%,
+    #010204 100%
+  );
+}
+
+/* Punch hole camera */
+.camera-punch-hole {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 6px;
+  border-radius: 3px;
+  background: #020202;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 1);
+}
+
+/* Front bezels */
+.front-bezel {
+  position: absolute;
+  background: #050505;
+}
+
+.front-bezel-top {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.front-bezel-bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.front-bezel-left {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+}
+
+.front-bezel-right {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 3px;
+}
+
+/* ============================================
+   SIDE FRAMES — Grade 5 Titanium
+   ============================================ */
+.phone-side {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  backface-visibility: hidden;
+}
+
+.phone-side-right {
+  right: -6px;
+  transform-origin: left center;
+  transform: rotateY(90deg);
+  background: linear-gradient(
+    180deg,
+    #9E9D99 0%,
+    #8E8D8A 20%,
+    #7E7D7A 50%,
+    #8E8D8A 80%,
+    #9E9D99 100%
+  );
+}
+
+.phone-side-left {
+  left: -6px;
+  transform-origin: right center;
+  transform: rotateY(-90deg);
+  background: linear-gradient(
+    180deg,
+    #9E9D99 0%,
+    #8E8D8A 20%,
+    #7E7D7A 50%,
+    #8E8D8A 80%,
+    #9E9D99 100%
+  );
+}
+
+.side-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #9E9D99 0%,
+    #8E8D8A 50%,
+    #7E7D7A 100%
+  );
+}
+
+/* Brushed titanium grain */
+.side-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+/* Buttons */
+.side-button {
+  position: absolute;
+  right: -1px;
+  background: linear-gradient(
+    90deg,
+    #8E8D8A 0%,
+    #9E9D99 50%,
+    #8E8D8A 100%
+  );
+  border-radius: 0 2px 2px 0;
+}
+
+.side-button-power {
+  top: 88px;
+  width: 3px;
+  height: 52px;
+}
+
+.side-button-volume-1 {
+  top: 72px;
+  left: -1px;
+  width: 3px;
+  height: 32px;
+}
+
+.side-button-volume-2 {
+  top: 108px;
+  left: -1px;
+  width: 3px;
+  height: 32px;
+}
+
+.side-button-action {
+  top: 150px;
+  left: -1px;
+  width: 3px;
+  height: 14px;
+}
+
+/* SIM tray */
+.side-sim-tray {
+  position: absolute;
+  top: 120px;
+  right: -1px;
+  width: 3px;
+  height: 10px;
+  background: #6E6E6A;
+  border-radius: 0 1px 1px 0;
+}
+
+/* Antenna lines */
+.side-antenna {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.side-antenna:nth-child(1) { top: 45px; }
+.side-antenna:nth-child(2) { top: 125px; }
+
+/* ============================================
+   TOP AND BOTTOM EDGES
+   ============================================ */
+.phone-edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  backface-visibility: hidden;
+}
+
+.phone-edge-top {
+  top: -6px;
+  transform-origin: bottom center;
+  transform: rotateX(-90deg);
+  background: linear-gradient(
+    90deg,
+    #9E9D99 0%,
+    #8E8D8A 50%,
+    #9E9D99 100%
+  );
+}
+
+.phone-edge-bottom {
+  bottom: -6px;
+  transform-origin: top center;
+  transform: rotateX(90deg);
+  background: linear-gradient(
+    90deg,
+    #9E9D99 0%,
+    #8E8D8A 50%,
+    #9E9D99 100%
+  );
+}
+
+.edge-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #9E9D99 0%,
+    #8E8D8A 50%,
+    #9E9D99 100%
+  );
+}
+
+.edge-mic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 2px;
+  background: #3a3a3a;
+  border-radius: 1px;
+}
+
+.edge-antenna {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.edge-antenna:first-child { left: 55px; }
+.edge-antenna:last-child { right: 55px; }
+
+.edge-usbc {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.edge-speaker {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-columns: repeat(3, 2px);
+  gap: 3px;
+}
+
+.speaker-hole {
+  width: 2px;
+  height: 2px;
+  border-radius: 1px;
+  background: #2a2a2a;
+}
+
+/* ============================================
+   REFLECTION
+   ============================================ */
+.phone-reflection {
+  position: absolute;
+  inset: 0;
+  width: 220px;
+  height: 480px;
+  border-radius: 36px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ============================================
+   AMBIENT GLOW
+   ============================================ */
+.phone-glow {
+  position: absolute;
+  width: 400px;
+  height: 600px;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(142, 141, 138, 0.08) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+/* ============================================
+   DRAG HINT
+   ============================================ */
+.drag-hint {
+  margin-top: 24px;
+  font-family: var(--font-display);
+  font-size: var(--text-caption);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-precision-white-40);
+  text-transform: uppercase;
+  animation: hint-fade 3s ease-out forwards;
+}
+
+@keyframes hint-fade {
+  0% { opacity: 0; transform: translateY(4px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
