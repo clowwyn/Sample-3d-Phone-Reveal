@@ -6,11 +6,58 @@ import './Phone3DCanvas.css';
 export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showHint, setShowHint] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
 
-  // Track mouse movement
+  // Detect if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Gyroscope support for mobile
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleOrientation = (event) => {
+      // beta: front-to-back tilt (-180 to 180)
+      // gamma: left-to-right tilt (-90 to 90)
+      const beta = event.beta || 0;   // -180 to 180
+      const gamma = event.gamma || 0; // -90 to 90
+
+      // Normalize to -1 to 1 range
+      const normalizedX = Math.max(-1, Math.min(1, gamma / 45));  // ±45° range
+      const normalizedY = Math.max(-1, Math.min(1, (beta - 90) / 45)); // centered at 90°
+
+      setMousePosition({ x: normalizedX, y: normalizedY });
+    };
+
+    // Request permission on iOS 13+
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            window.addEventListener('deviceorientation', handleOrientation);
+          }
+        })
+        .catch(console.error);
+    } else {
+      // Non-iOS or older iOS
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
+  }, [isMobile]);
+
+  // Track mouse movement (desktop only)
   const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
+    if (isMobile || !containerRef.current) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;  // 0 to 1
@@ -23,7 +70,7 @@ export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
     setMousePosition({ x: normalizedX, y: normalizedY });
   };
 
-  // Hide hint after first mouse move
+  // Hide hint after first interaction
   useEffect(() => {
     if (mousePosition.x !== 0 || mousePosition.y !== 0) {
       const t = setTimeout(() => setShowHint(false), 2000);
@@ -31,7 +78,7 @@ export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
     }
   }, [mousePosition]);
 
-  // Calculate rotation based on mouse position
+  // Calculate rotation based on mouse/gyro position
   const rotation = {
     x: -15 - mousePosition.y * 30,  // Tilt up/down (-45° to 15°)
     y: 25 + mousePosition.x * 40,   // Rotate left/right (-15° to 65°)
@@ -106,7 +153,7 @@ export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
 
       {showHint && (
         <div className="drag-hint">
-          <span>Move mouse to explore · Scroll to spin</span>
+          <span>{isMobile ? 'Tilt device to explore' : 'Move mouse to explore · Scroll to spin'}</span>
         </div>
       )}
     </div>
