@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import './ColorShowcase.css';
 
 const COLORS = [
@@ -44,237 +44,204 @@ const COLORS = [
   },
 ];
 
+const CARD_STRIDE = 520 + 48; // card width + gap — must match CSS
+const SCROLL_THRESHOLD = 40;   // min px between active-index updates
+const WHEEL_THRESHOLD = 60;    // accumulated deltaY before stepping
+const WHEEL_COOLDOWN = 450;    // ms between transitions
+
 export default function ColorShowcase() {
-  const sectionRef = useRef();
-  const containerRef = useRef();
+  const sectionRef = useRef(null);
+  const containerRef = useRef(null);
   const cardRefs = useRef([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [hasCompletedHorizontal, setHasCompletedHorizontal] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
-  const rafRef = useRef(null);
-  const lastScrollTime = useRef(0);
-  const scrollAccumulator = useRef(0);
-  // Mirror state into refs so the wheel handler reads current values
-  // without needing activeIndex/hasCompletedHorizontal in the effect deps.
-  // This prevents the listener from being torn down and re-created on every snap.
+  const dotRefs = useRef([]);
+
+  // Refs for values read inside event handlers. Storing them as refs lets the
+  // wheel/scroll listeners be attached exactly once on mount — no listener
+  // tear-down per transition.
+  const activeIndexRef = useRef(0);
   const isLockedRef = useRef(false);
   const hasCompletedRef = useRef(false);
-  const activeIndexRef = useRef(0);
+  const isInViewRef = useRef(false);
+  const scrollAccumulator = useRef(0);
+  const lastTransitionAt = useRef(0);
+  const rafScheduled = useRef(false);
 
-  // Smooth transition to next/prev color
-  const transitionToIndex = (targetIndex) => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const cardWidth = 600 + 64; // card width + gap
-    const targetScroll = targetIndex * cardWidth;
-
-    // Override CSS scroll-behavior: smooth so the snap is instant.
-    // Without this, the browser smooth-scrolls over ~300ms, racing the
-    // 0.6s card transitions and causing the janky double-animation.
-    container.scrollTo({ left: targetScroll, behavior: 'instant' });
-
-    activeIndexRef.current = targetIndex;
-    setActiveIndex(targetIndex);
+  // Apply the active class directly to the cards and dots — no React
+  // re-render needed for these.
+  const applyActive = (idx) => {
+    activeIndexRef.current = idx;
+    for (let i = 0; i < COLORS.length; i++) {
+      const card = cardRefs.current[i];
+      if (card) card.classList.toggle('active', i === idx);
+      const dot = dotRefs.current[i];
+      if (dot) dot.classList.toggle('active', i === idx);
+    }
   };
 
-  // Update card visibility with fade effects
-  const updateCardVisibility = useCallback((currentIndex) => {
-    cardRefs.current.forEach((card, index) => {
-      if (!card) return;
+  const transitionToIndex = (idx) => {
+    const container = containerRef.current;
+    if (!container) return;
+    container.scrollLeft = idx * CARD_STRIDE;
+    applyActive(idx);
+  };
 
-      const distance = Math.abs(index - currentIndex);
-      
-      if (distance === 0) {
-        // Active card: full scale and opacity
-        card.style.cssText = `
-          transform: scale(1) translateX(0);
-          opacity: 1;
-          pointer-events: auto;
-          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
-                      opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        `;
-      } else if (distance === 1) {
-        // Adjacent cards: slightly visible
-        const direction = index < currentIndex ? -20 : 20;
-        card.style.cssText = `
-          transform: scale(0.9) translateX(${direction}px);
-          opacity: 0.3;
-          pointer-events: none;
-          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
-                      opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        `;
-      } else {
-        // Far cards: hidden
-        card.style.cssText = `
-          transform: scale(0.8) translateX(0);
-          opacity: 0;
-          pointer-events: none;
-          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
-                      opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        `;
-      }
-    });
-  }, []);
-
-  // Handle horizontal scroll detection
+  // Container scroll → recompute active card. Throttled to one rAF tick and
+  // to px jumps that actually change the index.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleScroll = () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+    let lastProcessed = 0;
 
-      rafRef.current = requestAnimationFrame(() => {
+    const onScroll = () => {
+      if (rafScheduled.current) return;
+      rafScheduled.current = true;
+      requestAnimationFrame(() => {
+        rafScheduled.current = false;
         const scrollLeft = container.scrollLeft;
-        const cardWidth = 600 + 64;
-        const newIndex = Math.round(scrollLeft / cardWidth);
+        if (Math.abs(scrollLeft - lastProcessed) < SCROLL_THRESHOLD) return;
+        lastProcessed = scrollLeft;
 
-        if (newIndex !== activeIndexRef.current) {
-          activeIndexRef.current = newIndex;
-          setActiveIndex(newIndex);
-          updateCardVisibility(newIndex);
+        const newIndex = Math.round(scrollLeft / CARD_STRIDE);
+        if (
+          newIndex !== activeIndexRef.current &&
+          newIndex >= 0 &&
+          newIndex < COLORS.length
+        ) {
+          applyActive(newIndex);
         }
 
-        // Check completion
         const maxScroll = container.scrollWidth - container.clientWidth;
-        const progress = maxScroll > 0 ? scrollLeft / maxScroll : 0;
-
-        if (progress > 0.95 && !hasCompletedRef.current) {
+        if (maxScroll > 0 && scrollLeft / maxScroll > 0.95 && !hasCompletedRef.current) {
           hasCompletedRef.current = true;
-          hasCompleted.current = true;
-          setHasCompletedHorizontal(true);
-          setIsLocked(false);
+          isLockedRef.current = false;
         }
       });
     };
 
-    container.addEventListener('scroll', handleScroll, { passive: true });
+    container.addEventListener('scroll', onScroll, { passive: true });
+    return () => container.removeEventListener('scroll', onScroll);
+  }, []);
 
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
-    };
-  }, [updateCardVisibility]); // stable — no more activeIndex/hasCompleted deps
-
-  // Initialize card visibility
-  useEffect(() => {
-    updateCardVisibility(0);
-  }, [updateCardVisibility]);
-
-  // Lock scroll when section comes into view
+  // In-view tracking. The wheel handler reads isInViewRef instead of calling
+  // getBoundingClientRect() on every wheel event (which forces a layout).
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            setIsLocked(true);
+        for (const entry of entries) {
+          isInViewRef.current =
+            entry.isIntersecting && entry.intersectionRatio > 0.5;
+          if (isInViewRef.current) {
+            isLockedRef.current = true;
           }
-        });
+        }
       },
-      { threshold: [0.5] }
+      { threshold: [0, 0.5, 1] }
     );
 
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
 
-  // Wheel hijacking with smooth transitions
+  // Wheel handler — attached once, reads from refs.
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    if (prefersReducedMotion) return;
+    const onWheel = (e) => {
+      if (!isInViewRef.current) return;
 
-    const handleWheel = (e) => {
-      const section = sectionRef.current;
-      if (!section) return;
-
-      const rect = section.getBoundingClientRect();
-      const isInView = rect.top <= 100 && rect.bottom >= window.innerHeight - 100;
-
-      if (isInView && isLocked && !hasCompletedHorizontal) {
+      // Unlocked but finished: scroll up re-engages at the last color.
+      if (!isLockedRef.current && hasCompletedRef.current && e.deltaY < 0) {
         e.preventDefault();
-
-        // Accumulate scroll delta
-        scrollAccumulator.current += e.deltaY;
-
-        // Trigger transition when accumulated scroll crosses threshold.
-        // Lower threshold = more responsive; 50 was too high, made the wheel
-        // feel like nothing was happening before the snap.
-        const threshold = 15; // Sensitivity
-        
-        if (scrollAccumulator.current > threshold) {
-          // Scroll right
-          const nextIndex = Math.min(activeIndex + 1, COLORS.length - 1);
-          if (nextIndex !== activeIndex) {
-            transitionToIndex(nextIndex);
-            scrollAccumulator.current = 0;
-          }
-        } else if (scrollAccumulator.current < -threshold) {
-          // Scroll left
-          const prevIndex = Math.max(activeIndex - 1, 0);
-          if (prevIndex !== activeIndex) {
-            transitionToIndex(prevIndex);
-            scrollAccumulator.current = 0;
-          }
+        isLockedRef.current = true;
+        hasCompletedRef.current = false;
+        if (activeIndexRef.current !== COLORS.length - 1) {
+          transitionToIndex(COLORS.length - 1);
         }
-      } else if (!isLocked || hasCompletedHorizontal) {
-        // Reset accumulator when not locked
+        scrollAccumulator.current = 0;
+        return;
+      }
+
+      if (!isLockedRef.current) {
+        scrollAccumulator.current = 0;
+        return;
+      }
+
+      // Locked: always preventDefault so the page can't scroll through.
+      e.preventDefault();
+
+      const now = performance.now();
+      if (now - lastTransitionAt.current < WHEEL_COOLDOWN) return;
+
+      scrollAccumulator.current += e.deltaY;
+
+      if (scrollAccumulator.current > WHEEL_THRESHOLD) {
+        const next = Math.min(activeIndexRef.current + 1, COLORS.length - 1);
+        if (next !== activeIndexRef.current) {
+          transitionToIndex(next);
+          lastTransitionAt.current = now;
+        } else if (
+          activeIndexRef.current === COLORS.length - 1 &&
+          !hasCompletedRef.current
+        ) {
+          hasCompletedRef.current = true;
+          isLockedRef.current = false;
+        }
+        scrollAccumulator.current = 0;
+      } else if (scrollAccumulator.current < -WHEEL_THRESHOLD) {
+        const prev = Math.max(activeIndexRef.current - 1, 0);
+        if (prev !== activeIndexRef.current) {
+          transitionToIndex(prev);
+          lastTransitionAt.current = now;
+          if (hasCompletedRef.current) {
+            hasCompletedRef.current = false;
+            isLockedRef.current = true;
+          }
+        } else {
+          isLockedRef.current = false;
+          lastTransitionAt.current = now;
+          scrollAccumulator.current = 0;
+          window.scrollBy({
+            top: -window.innerHeight * 0.5,
+            behavior: 'smooth',
+          });
+        }
         scrollAccumulator.current = 0;
       }
     };
 
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, [isLocked, hasCompletedHorizontal, activeIndex]);
+    window.addEventListener('wheel', onWheel, { passive: false });
+    return () => window.removeEventListener('wheel', onWheel);
+  }, []);
+
+  // Initial active class. After this the DOM owns the active state.
+  useEffect(() => {
+    applyActive(0);
+  }, []);
 
   return (
     <section ref={sectionRef} className="color-showcase">
-      {/* Section header with fade-in */}
-      <div className="color-header">
-        <div className="color-tag">Colors</div>
-        <h2 className="color-title">
-          Five finishes.
-          <br />
-          One obsession.
-        </h2>
-        <p className="color-description">
-          Each color is precision-milled, hand-polished, and coated with
-          aerospace-grade finishes.
-        </p>
-      </div>
-
-      {/* Horizontal scroll container */}
       <div ref={containerRef} className="color-scroll-container">
         <div className="color-scroller">
           {COLORS.map((color, index) => (
             <div
               key={color.id}
               ref={(el) => (cardRefs.current[index] = el)}
-              className={`color-card ${index === activeIndex ? 'active' : ''}`}
+              className="color-card"
             >
-              {/* Phone image */}
               <div className="color-phone-image">
                 <img
                   src={color.image}
                   alt={`${color.name} phone`}
-                  loading="lazy"
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                  decoding="async"
                   className="phone-img"
                 />
-                {/* Shadow */}
                 <div className="phone-shadow" />
               </div>
-
-              {/* Color info */}
               <div className="color-info">
                 <div className="color-swatch">
                   <div
@@ -290,7 +257,6 @@ export default function ColorShowcase() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div className="color-scroll-indicator">
         <div className="scroll-hint">
           <svg
@@ -310,12 +276,12 @@ export default function ColorShowcase() {
           <span>Scroll to explore colors</span>
         </div>
 
-        {/* Progress dots */}
         <div className="color-dots">
           {COLORS.map((color, index) => (
             <div
               key={color.id}
-              className={`color-dot ${index === activeIndex ? 'active' : ''}`}
+              ref={(el) => (dotRefs.current[index] = el)}
+              className="color-dot"
             />
           ))}
         </div>

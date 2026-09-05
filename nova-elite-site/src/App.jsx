@@ -5,6 +5,7 @@ import RevealSection from './components/RevealSection';
 import CameraDetail from './components/CameraDetail';
 import ScrollDrivenPhone from './components/ScrollDrivenPhone';
 import ColorShowcase from './components/ColorShowcase';
+import ColorIntro from './components/ColorIntro';
 import './styles/variables.css';
 import './App.css';
 
@@ -131,6 +132,9 @@ export default function App() {
 
       {/* Scroll-driven cinematic section */}
       <ScrollDrivenPhone />
+
+      {/* Color intro — text section above the color carousel */}
+      <ColorIntro />
 
       {/* Color showcase with horizontal scroll */}
       <ColorShowcase />
