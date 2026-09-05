@@ -2,7 +2,7 @@
    NOVA Elite — Global Reset & Base
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap');
 
 *,
 *::before,
@@ -17,6 +17,20 @@ html {
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
@@ -42,11 +56,29 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-titanium);
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-titanium);
+  outline-offset: 2px;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: inherit;
   font-size: inherit;
+  text-wrap: balance;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+}
+
+p {
+  text-wrap: pretty;
+  font-feature-settings: 'kern' 1;
 }
 
 ::selection {
@@ -70,4 +102,28 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-titanium);
+}
+
+/* Performance: GPU acceleration for animations */
+.hero-phone,
+.phone3d-canvas,
+.reveal-visual,
+.spec-card {
+  will-change: transform;
+}
+
+/* Accessibility: Skip to main content */
+.skip-to-main {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-precision-white);
+  color: var(--color-void);
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-to-main:focus {
+  top: 0;
 }

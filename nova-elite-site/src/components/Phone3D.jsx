@@ -282,6 +282,9 @@ function FlashLiDAR({ materials }) {
 
 // ---- LOGO ----
 function Logo({ materials }) {
+  // Memoize so the material reference is stable across re-renders.
+  const logoMaterial = useMemo(() => materials.logo, [materials.logo]);
+
   // Create "NOVA" text logo using simple geometric shapes
   return (
     <group position={[0, -PH / 4, PD / 2 + 0.05 * S]}>
@@ -374,8 +377,8 @@ function PunchHole() {
 
 // ---- SIDE BUTTONS ----
 function Buttons({ materials }) {
-  const buttonDepth = 1.5 * S;
-  const buttonWidth = 2.5 * S;
+  const buttonDepth = 1.2 * S;
+  const buttonWidth = 2.2 * S;
   const buttonMaterial = new THREE.MeshStandardMaterial({
     color: new THREE.Color('#1a1a1a'),
     metalness: 0.6,
@@ -384,24 +387,19 @@ function Buttons({ materials }) {
   
   return (
     <group>
-      {/* Power — right side */}
-      <mesh position={[PW / 2 + buttonDepth / 2, PH / 2 - FRAME - 88 * S, 0]} castShadow>
-        <boxGeometry args={[buttonDepth, 52 * S, buttonWidth]} />
+      {/* Volume up — left side, small button */}
+      <mesh position={[-PW / 2 - buttonDepth / 2, PH / 2 - FRAME - 65 * S, 0]} castShadow>
+        <boxGeometry args={[buttonDepth, 18 * S, buttonWidth]} />
         <primitive object={buttonMaterial} />
       </mesh>
-      {/* Volume up — left side */}
-      <mesh position={[-PW / 2 - buttonDepth / 2, PH / 2 - FRAME - 72 * S, 0]} castShadow>
-        <boxGeometry args={[buttonDepth, 32 * S, buttonWidth]} />
+      {/* Volume down — left side, small button below volume up */}
+      <mesh position={[-PW / 2 - buttonDepth / 2, PH / 2 - FRAME - 88 * S, 0]} castShadow>
+        <boxGeometry args={[buttonDepth, 18 * S, buttonWidth]} />
         <primitive object={buttonMaterial} />
       </mesh>
-      {/* Volume down — left side */}
-      <mesh position={[-PW / 2 - buttonDepth / 2, PH / 2 - FRAME - 108 * S, 0]} castShadow>
-        <boxGeometry args={[buttonDepth, 32 * S, buttonWidth]} />
-        <primitive object={buttonMaterial} />
-      </mesh>
-      {/* Action — left side */}
-      <mesh position={[-PW / 2 - buttonDepth / 2, PH / 2 - FRAME - 150 * S, 0]} castShadow>
-        <boxGeometry args={[buttonDepth, 14 * S, buttonWidth]} />
+      {/* Power button — left side, smaller, higher up */}
+      <mesh position={[-PW / 2 - buttonDepth / 2, PH / 2 - FRAME - 40 * S, 0]} castShadow>
+        <boxGeometry args={[buttonDepth, 12 * S, buttonWidth]} />
         <primitive object={buttonMaterial} />
       </mesh>
     </group>
@@ -414,13 +412,13 @@ function BottomEdge({ materials }) {
     <group position={[0, -PH / 2, 0]}>
       {/* USB-C port — recessed into bottom edge */}
       <mesh position={[0, 0, -0.4 * S]}>
-        <boxGeometry args={[10 * S, 6 * S, 1.5 * S]} />
+        <boxGeometry args={[10 * S, 1.5 * S, 3 * S]} />
         <meshStandardMaterial color="#111111" metalness={0.2} roughness={0.9} />
       </mesh>
-      {/* Speaker grille holes — cylinders along Y-axis (into the phone edge) */}
-      {[-15 * S, -8 * S, 8 * S, 15 * S].map((x, i) => (
+      {/* Speaker grille holes — small spheres/dots */}
+      {[-18 * S, -12 * S, -6 * S, 6 * S, 12 * S, 18 * S].map((x, i) => (
         <mesh key={i} position={[x, 0, -0.4 * S]}>
-          <cylinderGeometry args={[0.7 * S, 0.7 * S, 3 * S, 8]} />
+          <sphereGeometry args={[0.6 * S, 8, 8]} />
           <primitive object={materials.speaker} />
         </mesh>
       ))}
@@ -464,13 +462,14 @@ function AntennaLines({ materials }) {
 }
 
 // ---- MAIN PHONE ----
-export default function Phone3D({ scrollY = 0, isDragging = false, dragRotation = { x: -15, y: 25 } }) {
+export default function Phone3D({ scrollYRef, isDragging = false, dragRotation = { x: -15, y: 25 } }) {
   const groupRef = useRef();
   const materials = useMaterials();
 
   useFrame((state) => {
     if (!groupRef.current) return;
 
+    const scrollY = scrollYRef ? scrollYRef.current : 0;
     const scrollX = -15 + scrollY * 0.008;
     const scrollY2 = 25 + scrollY * 0.02;
     const targetX = isDragging ? dragRotation.x : scrollX;

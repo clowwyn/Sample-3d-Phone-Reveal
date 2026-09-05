@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import Phone3D from './Phone3D';
 import './Phone3DCanvas.css';
 
-export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
+export default function Phone3DCanvas({ scrollYRef, className = '' }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showHint, setShowHint] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -93,9 +93,10 @@ export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
       >
         <Canvas
           camera={{ position: [0, 0, 1.8], fov: 40 }}
-          dpr={[1, 2]}
+          dpr={[1, 1.25]}
           gl={{
-            antialias: true,
+            antialias: false,
+            powerPreference: 'high-performance',
             toneMapping: 1, // NoToneMapping (cleaner)
             toneMappingExposure: 1.0,
             alpha: true, // Enable transparency
@@ -113,8 +114,8 @@ export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
             intensity={1.8}
             color="#e8e8f0"
             castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
             shadow-camera-near={0.1}
             shadow-camera-far={4}
             shadow-bias={-0.001}
@@ -143,7 +144,7 @@ export default function Phone3DCanvas({ scrollY = 0, className = '' }) {
 
           <Suspense fallback={null}>
             <Phone3D
-              scrollY={scrollY}
+              scrollYRef={scrollYRef}
               isDragging={true}
               dragRotation={rotation}
             />

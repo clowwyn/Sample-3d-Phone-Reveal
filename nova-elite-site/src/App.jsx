@@ -3,7 +3,8 @@ import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import RevealSection from './components/RevealSection';
 import CameraDetail from './components/CameraDetail';
-import Phone3DCanvas from './components/Phone3DCanvas';
+import ScrollDrivenPhone from './components/ScrollDrivenPhone';
+import ColorShowcase from './components/ColorShowcase';
 import './styles/variables.css';
 import './App.css';
 
@@ -83,13 +84,15 @@ const SECTIONS = [
 ];
 
 export default function App() {
-  const [scrollY, setScrollY] = useState(0);
+  // scrollY stored in a ref so children can read it inside their own RAF loops
+  // without forcing a re-render of the whole tree on every scroll pixel.
+  const scrollYRef = useRef(0);
   const [activeSection, setActiveSection] = useState('hero');
   const sectionRefs = useRef({});
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      scrollYRef.current = window.scrollY;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -124,7 +127,13 @@ export default function App() {
       <Navigation activeSection={activeSection} />
 
       {/* Hero — 3D scroll-driven reveal */}
-      <Hero scrollY={scrollY} />
+      <Hero scrollYRef={scrollYRef} />
+
+      {/* Scroll-driven cinematic section */}
+      <ScrollDrivenPhone />
+
+      {/* Color showcase with horizontal scroll */}
+      <ColorShowcase />
 
       {/* Feature sections */}
       {SECTIONS.map((section, index) => (
@@ -139,18 +148,13 @@ export default function App() {
             <>
               <RevealSection
                 section={section}
-                scrollY={scrollY}
+                scrollYRef={scrollYRef}
                 index={index}
               />
 
               {/* Section-specific visual */}
               <div className="section-visual-wrapper">
                 {section.id === 'camera' && <CameraDetail />}
-                {section.id === 'design' && (
-                  <Suspense fallback={<div className="visual-loading" />}>
-                    <Phone3DCanvas scrollY={scrollY} className="phone-small" />
-                  </Suspense>
-                )}
                 {section.id === 'display' && (
                   <div className="display-visual">
                     <div className="display-screen">

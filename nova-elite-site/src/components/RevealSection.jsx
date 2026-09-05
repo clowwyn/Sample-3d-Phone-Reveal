@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './RevealSection.css';
 
-export default function RevealSection({ section, scrollY, index }) {
+export default function RevealSection({ section, scrollYRef, index }) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef(null);
 
@@ -16,13 +16,29 @@ export default function RevealSection({ section, scrollY, index }) {
     return () => observer.disconnect();
   }, []);
 
+  // Update bg opacity directly via DOM — avoids React re-renders on every scroll.
+  useEffect(() => {
+    let rafId;
+    const update = () => {
+      if (ref.current) {
+        const scrollY = scrollYRef.current;
+        const el = ref.current;
+        const opacity = 1 - Math.max(0, Math.min(1, (scrollY - (el.offsetTop || 0) - 200) / 400));
+        el.querySelector('.reveal-bg').style.opacity = opacity;
+      }
+      rafId = requestAnimationFrame(update);
+    };
+    rafId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(rafId);
+  }, [scrollYRef]);
+
   return (
     <section
       ref={ref}
       className={`reveal-section reveal-${section.layout} ${isVisible ? 'visible' : ''}`}
       data-index={index}
     >
-      <div className="reveal-bg" style={{ opacity: 1 - Math.max(0, Math.min(1, (scrollY - (ref.current?.offsetTop || 0) - 200) / 400)) }} />
+      <div className="reveal-bg" />
 
       <div className="reveal-grid">
         {/* Visual side */}
