@@ -54,6 +54,12 @@ export default function ColorShowcase() {
   const rafRef = useRef(null);
   const lastScrollTime = useRef(0);
   const scrollAccumulator = useRef(0);
+  // Mirror state into refs so the wheel handler reads current values
+  // without needing activeIndex/hasCompletedHorizontal in the effect deps.
+  // This prevents the listener from being torn down and re-created on every snap.
+  const isLockedRef = useRef(false);
+  const hasCompletedRef = useRef(false);
+  const activeIndexRef = useRef(0);
 
   // Smooth transition to next/prev color
   const transitionToIndex = (targetIndex) => {
@@ -63,10 +69,12 @@ export default function ColorShowcase() {
     const cardWidth = 600 + 64; // card width + gap
     const targetScroll = targetIndex * cardWidth;
 
-    // No behavior:'smooth' — the 0.6s CSS transition on the cards provides
-    // visual continuity without fighting the browser's smooth-scroll engine.
-    container.scrollTo({ left: targetScroll });
+    // Override CSS scroll-behavior: smooth so the snap is instant.
+    // Without this, the browser smooth-scrolls over ~300ms, racing the
+    // 0.6s card transitions and causing the janky double-animation.
+    container.scrollTo({ left: targetScroll, behavior: 'instant' });
 
+    activeIndexRef.current = targetIndex;
     setActiveIndex(targetIndex);
   };
 
@@ -123,8 +131,9 @@ export default function ColorShowcase() {
         const scrollLeft = container.scrollLeft;
         const cardWidth = 600 + 64;
         const newIndex = Math.round(scrollLeft / cardWidth);
-        
-        if (newIndex !== activeIndex) {
+
+        if (newIndex !== activeIndexRef.current) {
+          activeIndexRef.current = newIndex;
           setActiveIndex(newIndex);
           updateCardVisibility(newIndex);
         }
@@ -132,8 +141,10 @@ export default function ColorShowcase() {
         // Check completion
         const maxScroll = container.scrollWidth - container.clientWidth;
         const progress = maxScroll > 0 ? scrollLeft / maxScroll : 0;
-        
-        if (progress > 0.95 && !hasCompletedHorizontal) {
+
+        if (progress > 0.95 && !hasCompletedRef.current) {
+          hasCompletedRef.current = true;
+          hasCompleted.current = true;
           setHasCompletedHorizontal(true);
           setIsLocked(false);
         }
@@ -141,14 +152,14 @@ export default function ColorShowcase() {
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     return () => {
       container.removeEventListener('scroll', handleScroll);
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [activeIndex, hasCompletedHorizontal, updateCardVisibility]);
+  }, [updateCardVisibility]); // stable — no more activeIndex/hasCompleted deps
 
   // Initialize card visibility
   useEffect(() => {
