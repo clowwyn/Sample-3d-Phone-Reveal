@@ -6,6 +6,7 @@ import CameraDetail from './components/CameraDetail';
 import ScrollDrivenPhone from './components/ScrollDrivenPhone';
 import ColorShowcase from './components/ColorShowcase';
 import ColorIntro from './components/ColorIntro';
+import TitaniumFrame from './components/TitaniumFrame';
 import './styles/variables.css';
 import './App.css';
 
@@ -159,6 +160,7 @@ export default function App() {
               {/* Section-specific visual */}
               <div className="section-visual-wrapper">
                 {section.id === 'camera' && <CameraDetail />}
+                {section.id === 'design' && <TitaniumFrame />}
                 {section.id === 'display' && (
                   <div className="display-visual">
                     <div className="display-screen">

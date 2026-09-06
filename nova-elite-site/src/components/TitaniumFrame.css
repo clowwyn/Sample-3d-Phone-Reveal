@@ -1,0 +1,256 @@
+/* ============================================
+   NOVA Elite — Titanium Frame Visual
+   Close-up of the side rail, brushed metal, micro-bevel
+   ============================================ */
+
+.titanium-frame {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.tf-frame {
+  position: relative;
+  width: 50%;
+  height: 78%;
+  display: flex;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.9),
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.tf-side {
+  position: relative;
+  flex: 1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(180, 185, 190, 0.15) 0%,
+      rgba(120, 125, 130, 0.05) 50%,
+      rgba(0, 0, 0, 0.4) 100%
+    ),
+    conic-gradient(
+      from 200deg,
+      #2a2c2e 0%,
+      #4a4d50 18%,
+      #2a2c2e 35%,
+      #5a5d60 55%,
+      #2a2c2e 75%,
+      #3a3d40 100%
+    );
+}
+
+.tf-side-left {
+  border-right: 1px solid rgba(0, 0, 0, 0.8);
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.tf-side-right {
+  border-left: 1px solid rgba(0, 0, 0, 0.8);
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.tf-brush {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 3px,
+    transparent 4px
+  );
+  pointer-events: none;
+}
+
+.tf-body {
+  position: relative;
+  width: 8px;
+  background: linear-gradient(
+    90deg,
+    #0a0a0a 0%,
+    #1a1c1e 50%,
+    #0a0a0a 100%
+  );
+  box-shadow:
+    inset 0 0 4px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(0, 0, 0, 0.8);
+}
+
+.tf-cutout-top,
+.tf-cutout-bottom {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 14px;
+  background: linear-gradient(180deg, #000 0%, #0a0a0a 100%);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 1);
+}
+
+.tf-cutout-top { top: 12%; }
+.tf-cutout-bottom { bottom: 12%; }
+
+.tf-bevel-hi {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(220, 230, 240, 0.4) 50%,
+    transparent 100%
+  );
+}
+
+.tf-bevel-lo {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.8) 50%,
+    transparent 100%
+  );
+}
+
+/* Corner ticks */
+.tf-edge-tl,
+.tf-edge-tr,
+.tf-edge-bl,
+.tf-edge-br {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: rgba(220, 220, 215, 0.3);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+
+.tf-edge-tl {
+  top: 8%;
+  left: 18%;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+
+.tf-edge-tr {
+  top: 8%;
+  right: 18%;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+
+.tf-edge-bl {
+  bottom: 8%;
+  left: 18%;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+
+.tf-edge-br {
+  bottom: 8%;
+  right: 18%;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+/* Callouts */
+.tf-callouts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tf-callout {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  animation: tf-callout-fade 1.2s var(--ease-out-expo) forwards;
+  opacity: 0;
+}
+
+.tf-callout-1 { animation-delay: 0.5s; }
+.tf-callout-2 { animation-delay: 0.7s; }
+.tf-callout-3 { animation-delay: 0.9s; }
+
+@keyframes tf-callout-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tf-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.tf-value {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.7), 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.tf-callout-1 {
+  top: 22%;
+  right: 6%;
+  text-align: right;
+}
+
+.tf-callout-2 {
+  top: 50%;
+  right: 6%;
+  transform: translateY(-50%);
+  text-align: right;
+}
+
+.tf-callout-3 {
+  bottom: 22%;
+  right: 6%;
+  text-align: right;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .titanium-frame {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+  }
+
+  .tf-frame {
+    width: 55%;
+    height: 70%;
+  }
+
+  .tf-callout-1 { top: 18%; right: 4%; }
+  .tf-callout-2 { top: 50%; right: 4%; }
+  .tf-callout-3 { bottom: 18%; right: 4%; }
+
+  .tf-label { font-size: 8px; letter-spacing: 0.18em; }
+  .tf-value { font-size: 9px; }
+}

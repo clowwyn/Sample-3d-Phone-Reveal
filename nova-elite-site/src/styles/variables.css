@@ -15,8 +15,8 @@
   --color-haze: rgba(255, 255, 255, 0.03);
 
   /* Typography */
-  --font-display: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
-  --font-body: 'Inter', 'SF Pro Text', -apple-system, sans-serif;
+  --font-display: 'Satoshi', 'SF Pro Display', -apple-system, sans-serif;
+  --font-body: 'Satoshi', 'SF Pro Text', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
 
   /* Type Scale */
